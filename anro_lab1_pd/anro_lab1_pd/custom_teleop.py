@@ -23,6 +23,8 @@ class CustomPublisher(Node):
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.msg = Twist()
         self.clear_msg()
+        print("Steruj żółwiem za pomocą parametrów ustawionych w pliku ")
+        print("'custom_teleop_launch.py' (domyślnie 'o' 'p' 'k' 'l')")
 
     def clear_msg(self):
 

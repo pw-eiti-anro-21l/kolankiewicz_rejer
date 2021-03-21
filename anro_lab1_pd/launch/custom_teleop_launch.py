@@ -17,5 +17,11 @@ def generate_launch_description():
                 {'left_key': 'k'},
                 {'right_key': 'p'}
             ]
-        )
+        ),
+        Node(
+            package='turtlesim',
+            namespace='',
+            executable='turtlesim_node',
+            name='sim'
+        ),
     ])
