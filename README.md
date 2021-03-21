@@ -1,1 +1,10 @@
-# kolankiewicz_rejer
+# Członkowie zespołu:
+   - Michał Kolankiewicz
+   - MIchał Rejer
+
+
+
+
+              
+            
+              
