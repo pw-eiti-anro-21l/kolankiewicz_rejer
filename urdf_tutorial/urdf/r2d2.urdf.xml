@@ -43,10 +43,9 @@
     </visual>
   </link>
   
-  <joint name="first_link_to_second_link" type="continuous">
+  <joint name="first_link_to_second_link" type="fixed">
     <parent link="first_link"/>
     <child link="second_link"/>
-    <axis xyz="0 0 1"/>
     <origin xyz="0 0 2" rpy="0 0 0"/>
   </joint>
   
@@ -62,10 +61,9 @@
     </visual>
   </link>
     
-  <joint name="second_link_to_tool" type="continuous">
+  <joint name="second_link_to_tool" type="fixed">
     <parent link="second_link"/>
     <child link="tool"/>
-    <axis xyz="0 0 1"/>
     <origin xyz="1 0 0"/>
   </joint>
 
