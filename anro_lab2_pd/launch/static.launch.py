@@ -11,9 +11,13 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
 
     urdf_file_name = 'static.urdf.xml'
+    rviz_file_name = 'static.rviz'
     urdf = os.path.join(
         get_package_share_directory('anro_lab2_pd'),
         urdf_file_name)
+    rviz2 = os.path.join(
+        get_package_share_directory('anro_lab2_pd'),
+        rviz_file_name)
     with open(urdf, 'r') as infp:
         robot_desc = infp.read()
 
@@ -31,4 +35,11 @@ def generate_launch_description():
                 {'use_sim_time': use_sim_time, 'robot_description': robot_desc}
                 ],
             arguments=[urdf]),
+        Node(
+            package='rviz2',
+            executable='rviz2',
+            name='rviz2',
+            output='screen',
+            parameters=[{'use_sim_time': use_sim_time}],
+            arguments=['-d', rviz2]),
     ])
