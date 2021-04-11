@@ -1,0 +1,74 @@
+<?xml version="1.0" ?>
+<robot name="anro_lab2_robot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<xacro:property name="param" value="${load_yaml('param.yaml')}"/>
+  <link name="base">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.1 0.1 0.1" />
+      </geometry>
+      <material name="gray">
+        <color rgba="0.2 0.2 0.2 1" />
+      </material>
+    </visual>
+  </link>
+  
+  <link name="first_link">
+    <visual>
+      <origin xyz="0 0 ${0.5 * param['robot']['d']}" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.1 0.1 ${param['robot']['d']}" />
+      </geometry>
+      <material name="blue">
+        <color rgba="0 0 1 1" />
+      </material>
+    </visual>
+  </link>
+      
+  <joint name="base_to_first_link" type="prismatic">
+    <parent link="base"/>
+    <child link="first_link"/>
+    <limit effort="1000.0" lower="-1" upper="0" velocity="0.5"/>
+    <axis xyz="0 0 1"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+  
+      
+  <link name="second_link">
+    <visual>
+      <origin xyz="${0.5 * param['robot']['a']} 0 0"/>
+      <geometry>
+        <box size="${param['robot']['a']} 0.1 0.1" />
+      </geometry>
+      <material name="green">
+        <color rgba="0 1 0 1" />
+      </material>
+    </visual>
+  </link>
+  
+  <joint name="first_link_to_second_link" type="continuous">
+    <parent link="first_link"/>
+    <child link="second_link"/>
+    <axis xyz="0 0 1"/>
+    <origin xyz="0 0 ${param['robot']['d']}" rpy="0 0 0"/>
+  </joint>
+  
+  <link name="tool">
+    <visual>
+      <origin xyz="${0.5 *param['robot']['b']} 0 0"/>
+      <geometry>
+        <box size="${param['robot']['b']} 0.1 0.1" />
+      </geometry>
+      <material name="red">
+        <color rgba="1 0 0 1" />
+      </material>
+    </visual>
+  </link>
+    
+  <joint name="second_link_to_tool" type="continuous">
+    <parent link="second_link"/>
+    <child link="tool"/>
+    <axis xyz="0 0 1"/>
+    <origin xyz="${param['robot']['a']} 0 0"/>
+  </joint>
+</robot>
