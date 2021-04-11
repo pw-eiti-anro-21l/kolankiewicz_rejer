@@ -26,11 +26,6 @@ class StatePublisher(Node):
         cont1 = 0.
         cont2 = 0.
         step =0.01
-
-        # message declarations
-        #odom_trans = TransformStamped()
-        #odom_trans.header.frame_id = 'base'
-        #odom_trans.child_frame_id = 'first_link'
         joint_state = JointState()
 
         try:
@@ -47,7 +42,7 @@ class StatePublisher(Node):
 
                 # send the joint state and transform
                 self.joint_pub.publish(joint_state)
-                #self.broadcaster.sendTransform(odom_trans)
+          
                 
                 # Create new robot state
                 prism +=step
@@ -57,8 +52,6 @@ class StatePublisher(Node):
                 elif prism>0.:
                     step *= -1.
                     prism = 0.
-
-
 
                 # This will adjust as needed per iteration
                 loop_rate.sleep()
