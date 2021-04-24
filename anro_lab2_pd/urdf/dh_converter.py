@@ -48,9 +48,8 @@ def write_yaml(dh_file):  # , yaml_file):
         else:
             text += "  link_xyz: "+str(0.5*rows[i][0])+" 0 0\n"
             text += "  size: "+str(rows[i][0])+"\n"
-    with open(r'/home/mickol34/dev_ws/src/kolankiewicz_rejer/anro_lab2_pd/urdf/param.yaml', 'w') as file:
+    with open(r'./param.yaml', 'w') as file:
         file.write(text)
 
-
-# conv_to_rpy_xyz(read_txt("/home/mickol34/dev_ws/src/kolankiewicz_rejer/anro_lab2_pd/urdf/dh_matrix.txt"))
-write_yaml("/home/mickol34/dev_ws/src/kolankiewicz_rejer/anro_lab2_pd/urdf/dh_matrix.txt")
+        
+write_yaml("./dh_matrix.txt")
