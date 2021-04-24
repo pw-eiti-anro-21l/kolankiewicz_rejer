@@ -15,9 +15,9 @@
   
   <link name="first_link">
     <visual>
-      <origin xyz="0 0 ${0.5 * param['robot']['d']}" rpy="0 0 0"/>
+      <origin xyz="${param['line1']['link_xyz']}" rpy="0 0 0"/>
       <geometry>
-        <box size="0.1 0.1 ${param['robot']['d']}" />
+        <box size="0.1 0.1 ${param['line1']['size']}" />
       </geometry>
       <material name="blue">
         <color rgba="0 0 1 1" />
@@ -28,7 +28,7 @@
   <joint name="base_to_first_link" type="prismatic">
     <parent link="base"/>
     <child link="first_link"/>
-    <limit effort="1000.0" lower="${-0.5 * param['robot']['d']}" upper="0" velocity="0.5"/>
+    <limit effort="1000.0" lower="${-1 * param['line1']['size']}" upper="0" velocity="0.5"/>
     <axis xyz="0 0 1"/>
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </joint>
@@ -36,9 +36,9 @@
       
   <link name="second_link">
     <visual>
-      <origin xyz="${0.5 * param['robot']['a']} 0 0"/>
+      <origin xyz="${param['line3']['link_xyz']}"/>
       <geometry>
-        <box size="${param['robot']['a']} 0.1 0.1" />
+        <box size="${param['line3']['size']} 0.1 0.1" />
       </geometry>
       <material name="green">
         <color rgba="0 1 0 1" />
@@ -50,14 +50,14 @@
     <parent link="first_link"/>
     <child link="second_link"/>
     <axis xyz="0 0 1"/>
-    <origin xyz="0 0 ${param['robot']['d']}" rpy="0 0 0"/>
+    <origin xyz="${param['line1']['joint_xyz']}" rpy="${param['line2']['joint_rpy']}"/>
   </joint>
   
   <link name="tool">
     <visual>
-      <origin xyz="${0.5 *param['robot']['b']} 0 0"/>
+      <origin xyz="0.5 0 0"/>
       <geometry>
-        <box size="${param['robot']['b']} 0.1 0.1" />
+        <box size="1 0.1 0.1" />
       </geometry>
       <material name="red">
         <color rgba="1 0 0 1" />
@@ -69,6 +69,6 @@
     <parent link="second_link"/>
     <child link="tool"/>
     <axis xyz="0 0 1"/>
-    <origin xyz="${param['robot']['a']} 0 0"/>
+    <origin xyz="${param['line3']['joint_xyz']}"/>
   </joint>
 </robot>

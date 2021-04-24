@@ -1,4 +1,15 @@
-robot:
-  d: 3
-  a: 1
-  b: 0.1
+line1:
+  joint_rpy: 0.0 -0.0 0.0
+  joint_xyz: 0.0 0.0 2.0
+  link_xyz: 0 0 1.0
+  size: 2.0
+line2:
+  joint_rpy: 0.0007878410979174078 -0.7799996733665466 1.5696760416030884
+  joint_xyz: 0.0 0.0 0.0
+  link_xyz: 0.0 0 0
+  size: 0.0
+line3:
+  joint_rpy: 0.0 -0.0 1.5699999332427979
+  joint_xyz: 3.0 0.0 0.0
+  link_xyz: 1.5 0 0
+  size: 3.0
