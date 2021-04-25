@@ -11,6 +11,7 @@ from std_msgs.msg import String
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Quaternion
 from geometry_msgs.msg import PoseStamped
+from ament_index_python.packages import get_package_share_directory
 
 
 class KDL_DKIN(Node):
@@ -25,8 +26,8 @@ class KDL_DKIN(Node):
         self.subscription
 
     def listener_callback(self, msg):
-        relpath = "src/anro_lab3_pd/urdf/dh_matrix.txt"
-        path = os.path.relpath(relpath)
+        file_name = 'dh_matrix.txt'
+        path = os.path.join( get_package_share_directory('anro_lab3_pd'), file_name)
         chain_test = self.kdl_chain(path)
         joints= kdl.JntArray(3)
         joints[0] = msg.position[0]

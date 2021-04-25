@@ -4,16 +4,15 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration, Command
 from launch_ros.actions import Node
-#from dh_converter import write_yaml
+
 def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
     urdf_file_name = 'movable.urdf.xacro.xml'
     rviz_file_name = 'movable.rviz'
     urdf = os.path.join( get_package_share_directory('anro_lab3_pd'), urdf_file_name)
     rviz = os.path.join( get_package_share_directory('anro_lab3_pd'), rviz_file_name)
-    #dh = os.path.relpath("src/anro_lab3_pd/urdf/dh_matrix.txt")
-    #param = os.path.relpath("src/anro_lab3_pd/urdf/param.yaml")
-    #write_yaml(dh, param)
+    dh = os.path.join(get_package_share_directory('anro_lab3_pd'),'dh_converter.py')
+    os.system('python3 '+dh)
     return LaunchDescription([
         DeclareLaunchArgument( 'use_sim_time', default_value='false',
             description='Use simulation (Gazebo) clock if true'),

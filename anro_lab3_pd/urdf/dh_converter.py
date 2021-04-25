@@ -1,6 +1,7 @@
 import mathutils
 import yaml
-
+from ament_index_python.packages import get_package_share_directory
+import os
 
 def read_txt(file_path):
     file = open(file_path)
@@ -51,5 +52,6 @@ def write_yaml(dh_file, yaml_file):
     with open(yaml_file, 'w') as file:
         file.write(text)
 
-        
-write_yaml("./dh_matrix.txt",'./param.yaml')
+dh = os.path.join(get_package_share_directory('anro_lab3_pd'),"dh_matrix.txt")
+param = os.path.join(get_package_share_directory('anro_lab3_pd'),"param.yaml")
+write_yaml(dh, param)

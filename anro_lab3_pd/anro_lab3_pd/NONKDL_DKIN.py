@@ -10,6 +10,7 @@ from rclpy.qos import QoSProfile
 from geometry_msgs.msg import PoseStamped
 from rclpy.clock import ROSClock
 import os
+from ament_index_python.packages import get_package_share_directory
 
 
 
@@ -25,8 +26,8 @@ class NONKDL_DKIN(Node):
         self.subscription  # prevent unused variable warning
 
     def listener_callback(self, msg):
-        relpath="src/anro_lab3_pd/urdf/dh_matrix.txt"
-        path = os.path.relpath(relpath)
+        file_name = 'dh_matrix.txt'
+        path = os.path.join( get_package_share_directory('anro_lab3_pd'), file_name)
         T = self.kinematic(path,msg)
         print(T)
         quat1 = T.to_quaternion()
