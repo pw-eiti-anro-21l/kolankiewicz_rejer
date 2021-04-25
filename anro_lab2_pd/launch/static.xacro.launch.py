@@ -10,6 +10,8 @@ def generate_launch_description():
     rviz_file_name = 'static.rviz'
     urdf = os.path.join( get_package_share_directory('anro_lab2_pd'), urdf_file_name)
     rviz = os.path.join( get_package_share_directory('anro_lab2_pd'), rviz_file_name)
+    dh = os.path.join(get_package_share_directory('anro_lab2_pd'),'dh_converter.py')
+    os.system('python3 '+dh)
     return LaunchDescription([
         DeclareLaunchArgument( 'use_sim_time', default_value='false',
             description='Use simulation (Gazebo) clock if true'),

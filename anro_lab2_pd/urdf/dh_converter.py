@@ -1,6 +1,7 @@
 import mathutils
 import yaml
-
+from ament_index_python.packages import get_package_share_directory
+import os
 
 def read_txt(file_path):
     file = open(file_path)
@@ -32,7 +33,7 @@ def conv_to_rpy_xyz(list):
     return rpy, xyz
 
 
-def write_yaml(dh_file):  # , yaml_file):
+def write_yaml(dh_file, yaml_file):
     rows = read_txt(dh_file)
     rpy, xyz = conv_to_rpy_xyz(rows)
     text = ""
@@ -48,8 +49,9 @@ def write_yaml(dh_file):  # , yaml_file):
         else:
             text += "  link_xyz: "+str(0.5*rows[i][0])+" 0 0\n"
             text += "  size: "+str(rows[i][0])+"\n"
-    with open(r'./param.yaml', 'w') as file:
+    with open(yaml_file, 'w') as file:
         file.write(text)
 
-        
-write_yaml("./dh_matrix.txt")
+dh = os.path.join(get_package_share_directory('anro_lab2_pd'),"dh_matrix.txt")
+param = os.path.join(get_package_share_directory('anro_lab2_pd'),"param.yaml")
+write_yaml(dh, param)

@@ -65,6 +65,6 @@
   <joint name="second_link_to_tool" type="fixed">
     <parent link="second_link"/>
     <child link="tool"/>
-    <origin xyz="${param['line3']['joint_xyz']}"/>
+    <origin xyz="${param['line3']['joint_xyz']}" rpy="${param['line3']['joint_rpy']}"/>
   </joint>
 </robot>

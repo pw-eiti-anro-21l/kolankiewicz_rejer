@@ -24,9 +24,6 @@ setup(
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
-        'console_scripts': [
-        #'state_publisher = anro_lab2_pd.state_publisher:main',
-        'teleop_talker = anro_lab2_pd.state_publisher_teleop:main',
-        ],
+        'console_scripts': [ ],
     },
 )
