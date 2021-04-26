@@ -18,6 +18,9 @@ class KDL_DKIN(Node):
 
     def __init__(self):
         super().__init__('kdl_dkin')
+        file_name = 'dh_matrix.txt'
+        path = os.path.join( get_package_share_directory('anro_lab3_pd'), file_name)
+        self.rows = self.read_txt(path_file)
         self.subscription = self.create_subscription(
             JointState,
             'joint_states',
@@ -26,9 +29,7 @@ class KDL_DKIN(Node):
         self.subscription
 
     def listener_callback(self, msg):
-        file_name = 'dh_matrix.txt'
-        path = os.path.join( get_package_share_directory('anro_lab3_pd'), file_name)
-        chain_test = self.kdl_chain(path)
+        chain_test = self.kdl_chain()
         joints= kdl.JntArray(3)
         joints[0] = msg.position[0]
         joints[1] = msg.position[1]
@@ -68,12 +69,11 @@ class KDL_DKIN(Node):
         file.close()
         return rows
 
-    def kdl_chain(self, path_file):
+    def kdl_chain(self):
         final_chain = kdl.Chain()
-        rows = self.read_txt(path_file)
-        a1, d1, alfa1, theta1 = rows[0]
-        a2, d2, alfa2, theta2 = rows[1]
-        a3, d3, alfa3, theta3 = rows[2]
+        a1, d1, alfa1, theta1 = self.rows[0]
+        a2, d2, alfa2, theta2 = self.rows[1]
+        a3, d3, alfa3, theta3 = self.rows[2]
 
         joint1 = kdl.Joint(kdl.Joint.TransZ)
         dh1 = kdl.Frame().DH(a2,alfa2,d1,theta1)

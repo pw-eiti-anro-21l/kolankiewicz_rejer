@@ -18,6 +18,9 @@ class NONKDL_DKIN(Node):
 
     def __init__(self):
         super().__init__('nonkdl_dkin')
+        file_name = 'dh_matrix.txt'
+        path = os.path.join( get_package_share_directory('anro_lab3_pd'), file_name)
+        self.rows = self.read_txt(path_file)
         self.subscription = self.create_subscription(
             JointState,
             'joint_states',
@@ -26,8 +29,7 @@ class NONKDL_DKIN(Node):
         self.subscription  # prevent unused variable warning
 
     def listener_callback(self, msg):
-        file_name = 'dh_matrix.txt'
-        path = os.path.join( get_package_share_directory('anro_lab3_pd'), file_name)
+
         T = self.kinematic(path,msg)
         print(T)
         quat1 = T.to_quaternion()
@@ -64,13 +66,12 @@ class NONKDL_DKIN(Node):
         T = rotX @ transX @ rotZ @ transZ
         return T
 
-    def kinematic(self, path_file, msg):
-        rows = self.read_txt(path_file)
+    def kinematic(self, msg):
         M01=mathutils.Matrix.Translation((0, 0, 0))
         M12=mathutils.Matrix.Translation((0, 0, 0))
         M23=mathutils.Matrix.Translation((0, 0, 0))
-        for i in range(len(rows)):
-            a, d, alfa, theta = rows[i]
+        for i in range(len(self.rows)):
+            a, d, alfa, theta = self.rows[i]
             if i == 0:
                 d = d+msg.position[0]
                 M01 = self.create_t_matrix(a, d, alfa, theta)
@@ -78,7 +79,7 @@ class NONKDL_DKIN(Node):
                 theta += msg.position[1]
                 M12 = self.create_t_matrix(a, d, alfa, theta)
             else:
-                theta += msg.position[2]
+                theta += msg.position[2]-math.pi/2
                 M23 = self.create_t_matrix(a, d, alfa, theta)
         return M01 @ M12 @ M23
 
