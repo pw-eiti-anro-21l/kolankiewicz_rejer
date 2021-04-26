@@ -30,7 +30,7 @@ class NONKDL_DKIN(Node):
 
     def listener_callback(self, msg):
 
-        T = self.kinematic(path,msg)
+        T = self.kinematic(msg)
         print(T)
         quat1 = T.to_quaternion()
         print("kwat")
