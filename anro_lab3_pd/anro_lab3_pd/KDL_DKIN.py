@@ -20,7 +20,7 @@ class KDL_DKIN(Node):
         super().__init__('kdl_dkin')
         file_name = 'dh_matrix.txt'
         path = os.path.join( get_package_share_directory('anro_lab3_pd'), file_name)
-        self.rows = self.read_txt(path_file)
+        self.rows = self.read_txt(path)
         self.subscription = self.create_subscription(
             JointState,
             'joint_states',
