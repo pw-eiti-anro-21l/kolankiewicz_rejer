@@ -69,6 +69,6 @@
     <parent link="second_link"/>
     <child link="tool"/>
     <axis xyz="0 0 1"/>
-    <origin xyz="${param['line3']['joint_xyz']}"/>
+    <origin xyz="${param['line3']['joint_xyz']}" rpy="${param['line3']['joint_rpy']}"/>
   </joint>
 </robot>

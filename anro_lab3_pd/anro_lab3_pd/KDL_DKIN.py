@@ -32,7 +32,7 @@ class KDL_DKIN(Node):
         joints= kdl.JntArray(3)
         joints[0] = msg.position[0]
         joints[1] = msg.position[1]
-        joints[2] = msg.position[2]-math.pi/2
+        joints[2] = msg.position[2]
         fk = kdl.ChainFkSolverPos_recursive(chain_test)
         frame = kdl.Frame()
         fk.JntToCart(joints, frame)
