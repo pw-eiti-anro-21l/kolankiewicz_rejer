@@ -79,7 +79,7 @@ class NONKDL_DKIN(Node):
                 theta += msg.position[1]
                 M12 = self.create_t_matrix(a, d, alfa, theta)
             else:
-                theta += msg.position[2]-math.pi/2
+                theta += msg.position[2]
                 M23 = self.create_t_matrix(a, d, alfa, theta)
         return M01 @ M12 @ M23
 
