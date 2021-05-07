@@ -25,10 +25,10 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-        #'state_publisher = anro_lab2_pd.state_publisher:main',
-        'teleop_talker = anro_lab4_pd.state_publisher_teleop:main',
         'nonkdl_node = anro_lab4_pd.NONKDL_DKIN:main',
         'kdl_node = anro_lab4_pd.KDL_DKIN:main',
+        'service = anro_lab4_pd.jint:main',
+        'client = anro_lab4_pd.jint_client:main',
         ],
     },
 )
