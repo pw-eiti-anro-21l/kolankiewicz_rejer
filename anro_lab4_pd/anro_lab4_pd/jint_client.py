@@ -38,8 +38,10 @@ def main(args=None):
                     'Service call failed %r' % (e,))
             else:
                 minimal_client.get_logger().info(
-                    'Response: %d ' %                               # CHANGE
-                    (minimal_client.req.prismatic)) # CHANGE
+                    'Prismatic: %d, Continuous 1: %d,Continuous 2: %d,Time: %d,Method: %s, Response: %s' %                             
+                    (minimal_client.req.prismatic, minimal_client.req.angle1,
+                    minimal_client.req.angle2,minimal_client.req.time,
+                    minimal_client.req.method, response.resp))
                 return 
     minimal_client.destroy_node()
     rclpy.shutdown()

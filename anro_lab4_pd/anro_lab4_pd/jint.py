@@ -5,6 +5,8 @@ import rclpy
 from rclpy.node import Node
 import time
 import math
+from rclpy.clock import ROSClock
+#from threading import Timer
 
 
 class Jint(Node):
@@ -13,19 +15,9 @@ class Jint(Node):
         super().__init__('jint')
         self.beg_position = [0.0,0.0,0.0]
         self.srv = self.create_service(Jintstructure, 'jint_structure', self.jint_control_srv_callback)        # CHANGE
-        self.subscriber = self.create_subscription(JointState, 'joint_states_sub',self.listener_callback,1)
-        qos_profile = QoSProfile(depth=10)
-        self.publisher = self.create_publisher(JointState, 'joint_pub', qos_profile)
+        qos_profile1 = QoSProfile(depth=10)
+        self.publisher = self.create_publisher(JointState, 'joint_states', qos_profile1)
 
-
-    def jint_structure_callback(self, request, response):
-        response = ""
-        return response
-
-    def listener_callback(self, msg):
-        self.beg_position[0] = msg.position[0]
-        self.beg_position[1] = msg.position[1]
-        self.beg_position[2] = msg.position[2]
 
     def jint_control_srv_callback(self, request, response ):
         self.linear(request)
@@ -37,10 +29,10 @@ class Jint(Node):
         start = self.beg_position
         rate_given = 10
         steps = math.floor(request.time*rate_given)
-        now = self.get_clock().now()
+        print(steps)
         joint_state = JointState()
-        joint_state.header.stamp = now.to_msg()
-        joint_state.name = ['prism', 'cont1', 'cont2']
+        joint_state.header.stamp = ROSClock().now().to_msg()
+        joint_state.name = ['base_to_first_link', 'first_link_to_second_link', 'second_link_to_tool']
         joint_state.position = start
         curr_pos =start
         delta = [0.0,0.0,0.0]
@@ -48,12 +40,16 @@ class Jint(Node):
         delta[1]=(request.angle1 - start[1])/steps
         delta[2]=(request.angle2 - start[2])/steps
         for i in range(0, steps):
+            print(i)
             for n in range(0,3):
                 curr_pos[n]+=delta[n]
             joint_state.position = curr_pos
             print(joint_state)
             self.publisher.publish(joint_state)
-            time.sleep(1/rate_given)
+            time.sleep(0.1)
+        self.beg_position=curr_pos
+        print(curr_pos)
+        
 
 def main(args=None):
     rclpy.init(args=args)
