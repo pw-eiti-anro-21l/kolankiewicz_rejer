@@ -14,14 +14,37 @@ class OintClient(Node):
         self.req = Ointstructure.Request()                                   # CHANGE
 
     def send_request(self):
-        self.req.x = float(sys.argv[1])
-        self.req.y = float(sys.argv[2])
-        self.req.z = float(sys.argv[3])
-        self.req.roll = float(sys.argv[4])
-        self.req.pitch = float(sys.argv[5])
-        self.req.yaw = float(sys.argv[6])
-        self.req.time = float(sys.argv[7])  
-        self.req.method = sys.argv[8]                # CHANGE
+        try:
+            x = float(sys.argv[1])
+            y = float(sys.argv[2])
+            z = float(sys.argv[3])
+            roll = float(sys.argv[4])  
+            pitch = float(sys.argv[5])
+            yaw = float(sys.argv[6])
+            time = float(sys.argv[7])  
+            method = sys.argv[8]  
+        except IndexError:
+            print('Wrong number of parameters. x,y,z coordinates, roll,pitch,yaw angles, time and method are expected.')
+            raise Exception()
+        try:
+            if time ==0:
+                self.get_logger().info('0 time is not allowed.')
+                raise ValueError()
+            elif method != "linear" and method!="polynomial":
+                self.get_logger().info('There are only two specified methods: polynomial and linear.')
+                raise ValueError()
+            else:
+                self.req.x = x
+                self.req.y = y
+                self.req.z = z
+                self.req.roll = roll
+                self.req.pitch = pitch
+                self.req.yaw = yaw
+                self.req.time = time  
+                self.req.method = method  
+        except ValueError:
+            print("Wrong parameters passed to client.")
+            sys.exit(1)       
         self.future = self.cli.call_async(self.req)
 
 
