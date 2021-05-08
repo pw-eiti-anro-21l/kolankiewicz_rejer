@@ -13,42 +13,43 @@ class Jint(Node):
 
     def __init__(self):
         super().__init__('jint')
-        self.beg_position = [0.0,0.0,0.0]
         self.srv = self.create_service(Jintstructure, 'jint_structure', self.jint_control_srv_callback)        # CHANGE
         qos_profile1 = QoSProfile(depth=10)
         self.publisher = self.create_publisher(JointState, 'joint_states', qos_profile1)
+        self.joint_state = JointState()
+        self.joint_state.header.stamp = ROSClock().now().to_msg()
+        self.joint_state.name = ['base_to_first_link', 'first_link_to_second_link', 'second_link_to_tool']
+        self.joint_state.position = [0.0,0.0,0.0]
+        self.rate=10
 
 
     def jint_control_srv_callback(self, request, response ):
-        self.linear(request)
+        if request.method == "linear":
+            self.linear(request)
+        elif request.method == "polynomial":
+            self.polynomial(request)
+        else:
+            print('Wrong method')
         response.resp = "Interpolation succeded"
         return response
 
 
     def linear(self, request):
-        start = self.beg_position
-        rate_given = 10
-        steps = math.floor(request.time*rate_given)
-        print(steps)
-        joint_state = JointState()
-        joint_state.header.stamp = ROSClock().now().to_msg()
-        joint_state.name = ['base_to_first_link', 'first_link_to_second_link', 'second_link_to_tool']
-        joint_state.position = start
-        curr_pos =start
+        steps = math.floor(request.time*self.rate)
         delta = [0.0,0.0,0.0]
-        delta[0]=(request.prismatic - start[0])/steps
-        delta[1]=(request.angle1 - start[1])/steps
-        delta[2]=(request.angle2 - start[2])/steps
+        delta[0]=(request.prismatic - self.joint_state.position[0])/steps
+        delta[1]=(request.angle1 - self.joint_state.position[1])/steps
+        delta[2]=(request.angle2 - self.joint_state.position[2])/steps
         for i in range(0, steps):
-            print(i)
             for n in range(0,3):
-                curr_pos[n]+=delta[n]
-            joint_state.position = curr_pos
-            print(joint_state)
-            self.publisher.publish(joint_state)
-            time.sleep(0.1)
-        self.beg_position=curr_pos
-        print(curr_pos)
+                 self.joint_state.position[n]+=delta[n]
+            self.publisher.publish(self.joint_state)
+            time.sleep(1/self.rate)
+
+
+def polynomial(self, request):
+
+    return
         
 
 def main(args=None):
