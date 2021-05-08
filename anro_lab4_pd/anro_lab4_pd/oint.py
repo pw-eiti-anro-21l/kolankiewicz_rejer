@@ -28,7 +28,11 @@ class Oint(Node):
         self.pose.pose.orientation.y= 0.0
         self.pose.pose.orientation.z= 0.0
         self.pose.pose.orientation.w= 0.0
-        self.rate=20
+        self.roll = 0
+        self.pitch = 0
+        self.yaw = 0
+        self.last_rpy = [0.0, 0.0, 0.0]
+        self.rate = 20
 
 
     def oint_control_srv_callback(self, request, response ):
@@ -51,25 +55,29 @@ class Oint(Node):
         delta[1]=(request.y - self.pose.pose.position.y)/steps
         delta[2]=(request.z - self.pose.pose.position.z)/steps
         rpy = [request.roll, request.pitch, request.yaw]
-        req_quat = self.rpy_to_quat(rpy)
-        quat_delta[0]=(req_quat[0] - self.pose.pose.orientation.w)/steps
-        quat_delta[1]=(req_quat[1] - self.pose.pose.orientation.x)/steps
-        quat_delta[2]=(req_quat[2] - self.pose.pose.orientation.y)/steps
-        quat_delta[3]=(req_quat[3] - self.pose.pose.orientation.z)/steps
+        delta_rpy = [0.0, 0.0, 0.0]
+        delta_rpy[0] = (request.roll - self.last_rpy[0])/steps
+        delta_rpy[1] = (request.pitch - self.last_rpy[1])/steps
+        delta_rpy[2] = (request.yaw - self.last_rpy[2])/steps
         for i in range(0, steps):
             self.pose.pose.position.x+=delta[0]
             self.pose.pose.position.y+=delta[1]
             self.pose.pose.position.z+=delta[2]
-            self.pose.pose.orientation.w += quat_delta[0]
-            self.pose.pose.orientation.x += quat_delta[1]
-            self.pose.pose.orientation.y += quat_delta[2]
-            self.pose.pose.orientation.z += quat_delta[3]
+            self.roll += delta_rpy[0]
+            self.pitch += delta_rpy[1]
+            self.yaw += delta_rpy[2]
+            self.last_rpy = [self.roll, self.pitch, self.yaw]
+            updated_quat = self.rpy_to_quat(self.last_rpy)
+            self.pose.pose.orientation.w = updated_quat[0]
+            self.pose.pose.orientation.x = updated_quat[1]
+            self.pose.pose.orientation.y = updated_quat[2]
+            self.pose.pose.orientation.z = updated_quat[3]
+            self.pose.header.stamp = ROSClock().now().to_msg()
             self.pose_publisher.publish(self.pose)
             time.sleep(1/self.rate)
 
     def polynomial(self, request):
         steps = math.floor(request.time*self.rate)
-        delta = [0.0,0.0,0.0]
         a = [0.0,0.0,0.0]
         b = [0.0,0.0,0.0]
         beg = [self.pose.pose.position.x, 
@@ -78,33 +86,31 @@ class Oint(Node):
         distances = [request.x - self.pose.pose.position.x,
                     request.y - self.pose.pose.position.y,
                     request.z - self.pose.pose.position.z]
-        quat_a = [0.0,0.0,0.0,0.0]
-        quat_b = [0.0,0.0,0.0,0.0]
-        quat_beg = [self.pose.pose.orientation.w,
-                    self.pose.pose.orientation.x,
-                    self.pose.pose.orientation.y,
-                    self.pose.pose.orientation.z]
-        rpy = [request.roll, request.pitch, request.yaw]
-        req_quat = self.rpy_to_quat(rpy)
-        quat_dists = [req_quat[0] - self.pose.pose.orientation.w,
-                    req_quat[1] - self.pose.pose.orientation.x,
-                    req_quat[2] - self.pose.pose.orientation.y,
-                    req_quat[3] - self.pose.pose.orientation.z]
+        rpy_a = [0.0,0.0,0.0]
+        rpy_b = [0.0,0.0,0.0]
+        rpy_beg = self.last_rpy
+        rpy_distances = [request.roll - self.roll,
+                        request.pitch - self.pitch,
+                        request.yaw - self.yaw]
         for k in range(3):
             a[k] = -2*distances[k]/pow(steps, 3)
             b[k] = 3*distances[k]/pow(steps, 2)
-        for p in range(4):
-            quat_a[p] = -2*quat_dists[p]/pow(steps, 3)
-            quat_b[p] = 3*quat_dists[p]/pow(steps, 2)
+            rpy_a[k] = -2*rpy_distances[k]/pow(steps, 3)
+            rpy_b[k] = 3*rpy_distances[k]/pow(steps, 2)
         for i in range(steps):
-            for n in range(3):
-                self.pose.pose.position.x = a[0]*pow(i,3) + b[0]*pow(i,2) + beg[0]
-                self.pose.pose.position.y = a[1]*pow(i,3) + b[1]*pow(i,2) + beg[1]
-                self.pose.pose.position.z = a[2]*pow(i,3) + b[2]*pow(i,2) + beg[2]
-                self.pose.pose.orientation.w = quat_a[0]*pow(i,3) + quat_b[0]*pow(i,2) + quat_beg[0]
-                self.pose.pose.orientation.x = quat_a[1]*pow(i,3) + quat_b[1]*pow(i,2) + quat_beg[1]
-                self.pose.pose.orientation.y = quat_a[2]*pow(i,3) + quat_b[2]*pow(i,2) + quat_beg[2]
-                self.pose.pose.orientation.z = quat_a[3]*pow(i,3) + quat_b[3]*pow(i,2) + quat_beg[3]
+            self.pose.pose.position.x = a[0]*pow(i,3) + b[0]*pow(i,2) + beg[0]
+            self.pose.pose.position.y = a[1]*pow(i,3) + b[1]*pow(i,2) + beg[1]
+            self.pose.pose.position.z = a[2]*pow(i,3) + b[2]*pow(i,2) + beg[2]
+            self.roll = rpy_a[0]*pow(i,3) + rpy_b[0]*pow(i,2) + rpy_beg[0]
+            self.pitch = rpy_a[1]*pow(i,3) + rpy_b[1]*pow(i,2) + rpy_beg[1]
+            self.yaw = rpy_a[2]*pow(i,3) + rpy_b[2]*pow(i,2) + rpy_beg[2]
+            self.last_rpy = [self.roll, self.pitch, self.yaw]
+            updated_quat = self.rpy_to_quat(self.last_rpy)
+            self.pose.pose.orientation.w = updated_quat[0]
+            self.pose.pose.orientation.x = updated_quat[1]
+            self.pose.pose.orientation.y = updated_quat[2]
+            self.pose.pose.orientation.z = updated_quat[3]
+            self.pose.header.stamp = ROSClock().now().to_msg()
             self.pose_publisher.publish(self.pose)
             time.sleep(1/self.rate)
 
