@@ -4,10 +4,10 @@ import rclpy
 from rclpy.node import Node
 
 
-class JintClient(Node):
+class OintClient(Node):
 
     def __init__(self):
-        super().__init__('jint_client')
+        super().__init__('oint_client')
         self.cli = self.create_client(Jintstructure, 'jint_structure')       # CHANGE
         while not self.cli.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('service not available, waiting again...')
@@ -25,25 +25,25 @@ class JintClient(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    jint_client = JintClient()
-    jint_client.send_request()
+    oint_client = OintClient()
+    oint_client.send_request()
 
     while rclpy.ok():
-        rclpy.spin_once(jint_client)
-        if jint_client.future.done():
+        rclpy.spin_once(oint_client)
+        if oint_client.future.done():
             try:
-                response = jint_client.future.result()
+                response = oint_client.future.result()
             except Exception as e:
-                jint_client.get_logger().info(
+                oint_client.get_logger().info(
                     'Service call failed %r' % (e,))
             else:
-                jint_client.get_logger().info(
+                oint_client.get_logger().info(
                     'Prismatic: %d, Continuous 1: %d,Continuous 2: %d,Time: %d,Method: %s, Response: %s' %                             
-                    (jint_client.req.prismatic, jint_client.req.angle1,
-                    jint_client.req.angle2,jint_client.req.time,
-                    jint_client.req.method, response.resp))
+                    (oint_client.req.prismatic, oint_client.req.angle1,
+                    oint_client.req.angle2,oint_client.req.time,
+                    oint_client.req.method, response.resp))
                 return 
-    jint_client.destroy_node()
+    oint_client.destroy_node()
     rclpy.shutdown()
 
 

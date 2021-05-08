@@ -65,6 +65,10 @@ class Jint(Node):
             self.publisher.publish(self.joint_state)
             time.sleep(1/self.rate)
 
+
+
+        
+
 def main(args=None):
     rclpy.init(args=args)
 
