@@ -6,9 +6,10 @@ import time
 import math
 from rclpy.clock import ROSClock
 import mathutils
-from geometry_msgs.msg import PoseStamped
-from geometry_msgs.msg import Quaternion
-#from threading import Timer
+from geometry_msgs.msg import Quaternion, Point, PoseStamped,Vector3
+from std_msgs.msg import ColorRGBA
+from visualization_msgs.msg import Marker
+from visualization_msgs.msg import MarkerArray
 
 
 class Oint(Node):
@@ -21,18 +22,33 @@ class Oint(Node):
         self.pose = PoseStamped()
         self.pose.header.stamp = ROSClock().now().to_msg()
         self.pose.header.frame_id = "base"
-        self.pose.pose.position.x = 0.0
-        self.pose.pose.position.y = 0.0
-        self.pose.pose.position.z = 0.0
-        self.pose.pose.orientation.x= 0.0
-        self.pose.pose.orientation.y= 0.0
-        self.pose.pose.orientation.z= 0.0
-        self.pose.pose.orientation.w= 0.0
+
+        self.pose.pose.position = Point(x=0.0,y=0.0,z=0.0)
+        self.pose.pose.orientation = Quaternion(w=0.0,x=0.0,y=0.0,z=0.0)
         self.roll = 0
         self.pitch = 0
         self.yaw = 0
         self.last_rpy = [0.0, 0.0, 0.0]
         self.rate = 20
+        qos_profile_marker = QoSProfile(depth=10)
+        self.marker_publisher = self.create_publisher(MarkerArray, 'marker_array', qos_profile_marker)
+        self.marker_init()
+
+    def marker_init(self):
+        self.markerArray = MarkerArray()
+        self.marker = Marker()
+        self.marker.header.frame_id = "base"
+
+        self.marker.id = 0
+        self.marker.action = Marker.DELETEALL
+        self.markerArray.markers.append(self.marker)
+        self.marker_publisher.publish(self.markerArray)
+        
+        self.marker.type = self.marker.SPHERE
+        self.marker.action = self.marker.ADD
+        self.marker.scale = Vector3(x=0.02,y=0.02,z=0.02)
+        self.marker.pose.orientation= Quaternion(w=0.0,x=0.0,y=0.0,z=0.0)
+        self.marker.color = ColorRGBA(r = 0.4,g = 1.0,b = 0.0,a=1.0)
 
 
     def oint_control_srv_callback(self, request, response ):
@@ -46,6 +62,14 @@ class Oint(Node):
             response.resp = 'Wrong method'
         return response
 
+    def marker_oint(self):
+        self.marker.pose.position= self.pose.pose.position
+        self.markerArray.markers.append(self.marker)
+        id = 0
+        for m in self.markerArray.markers:
+            m.id = id
+            id += 1
+        self.marker_publisher.publish(self.markerArray)
 
     def linear(self, request):
         steps = math.floor(request.time*self.rate)
@@ -74,6 +98,7 @@ class Oint(Node):
             self.pose.pose.orientation.z = updated_quat[3]
             self.pose.header.stamp = ROSClock().now().to_msg()
             self.pose_publisher.publish(self.pose)
+            self.marker_oint()
             time.sleep(1/self.rate)
 
     def polynomial(self, request):
@@ -112,6 +137,7 @@ class Oint(Node):
             self.pose.pose.orientation.z = updated_quat[3]
             self.pose.header.stamp = ROSClock().now().to_msg()
             self.pose_publisher.publish(self.pose)
+            self.marker_oint()
             time.sleep(1/self.rate)
 
     def rpy_to_quat(self, rpy):
@@ -121,17 +147,6 @@ class Oint(Node):
         T = rotZ@rotY@rotX
         quat = T.to_quaternion()
         return quat
-
-    # def quat_to_rpy(quat):
-    #     q0 = quat.w
-    #     q1 = quat.x
-    #     q2 = quat.y
-    #     q3 = quat.z
-    #     roll = math.atan2(2*(q0*q1+q2*q3), 1-2*(q1*q1+q2*q2))
-    #     pitch = math.asin(2(q0*q2-q3*q1))
-    #     yaw = math.atan2(2*(q0*q3+q1*q2), 1-2*(q2*q2+q3*q3))
-    #     return roll, pitch, yaw
-        
 
 
 

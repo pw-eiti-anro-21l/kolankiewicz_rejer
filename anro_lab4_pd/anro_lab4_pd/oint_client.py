@@ -50,6 +50,7 @@ def main(args=None):
                         oint_client.req.method, response.resp))
                 else:
                     oint_client.get_logger().info('Response: Wrong method')
+                return
     oint_client.destroy_node()
     rclpy.shutdown()
 
