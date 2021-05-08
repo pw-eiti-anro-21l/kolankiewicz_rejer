@@ -23,14 +23,15 @@ class Jint(Node):
         self.rate=20
 
 
-    def jint_control_srv_callback(self, request, response ):
+    def jint_control_srv_callback(self, request, response):
         if request.method == "linear":
             self.linear(request)
+            response.resp = "Linear interpolation succeded"
         elif request.method == "polynomial":
             self.polynomial(request)
+            response.resp = "Polynomial interpolation succeded"
         else:
             print('Wrong method')
-        response.resp = "Interpolation succeded"
         return response
 
 
