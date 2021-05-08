@@ -17,11 +17,11 @@ class OintClient(Node):
         self.req.x = float(sys.argv[1])
         self.req.y = float(sys.argv[2])
         self.req.z = float(sys.argv[3])
-        self.req.roll = float(sys.argv[1])
-        self.req.pitch = float(sys.argv[2])
-        self.req.yaw = float(sys.argv[3])
-        self.req.time = float(sys.argv[4])  
-        self.req.method = sys.argv[5]                # CHANGE
+        self.req.roll = float(sys.argv[4])
+        self.req.pitch = float(sys.argv[5])
+        self.req.yaw = float(sys.argv[6])
+        self.req.time = float(sys.argv[7])  
+        self.req.method = sys.argv[8]                # CHANGE
         self.future = self.cli.call_async(self.req)
 
 
@@ -40,12 +40,16 @@ def main(args=None):
                 oint_client.get_logger().info(
                     'Service call failed %r' % (e,))
             else:
-                oint_client.get_logger().info(
-                    'x: %d, y: %d,z: %d,Time: %d,Method: %s, Response: %s' %                             
-                    (oint_client.req.x, oint_client.req.y,
-                    oint_client.req.z,oint_client.req.time,
-                    oint_client.req.method, response.resp))
-                return 
+                if str(oint_client.req.method) == "linear" or str(oint_client.req.method) == "polynomial":
+                    oint_client.get_logger().info(
+                        'x:%d, y:%d,z:%d, roll:%d, pitch:%d, yaw:%d, Time:%d, Method:%s, Response:%s' %                             
+                        (oint_client.req.x, oint_client.req.y,
+                        oint_client.req.z, oint_client.req.roll,
+                        oint_client.req.pitch, oint_client.req.yaw,
+                        oint_client.req.time,
+                        oint_client.req.method, response.resp))
+                else:
+                    oint_client.get_logger().info('Response: Wrong method')
     oint_client.destroy_node()
     rclpy.shutdown()
 
