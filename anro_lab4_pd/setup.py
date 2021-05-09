@@ -25,10 +25,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-        'nonkdl_node = anro_lab4_pd.NONKDL_DKIN:main',
-        'kdl_node = anro_lab4_pd.KDL_DKIN:main',
-        'service = anro_lab4_pd.jint:main',
-        'client = anro_lab4_pd.jint_client:main',
+        'jintService = anro_lab4_pd.jint:main',
+        'jintClient = anro_lab4_pd.jint_client:main',
         'ointService = anro_lab4_pd.oint:main',
         'ointClient = anro_lab4_pd.oint_client:main',
         ],
