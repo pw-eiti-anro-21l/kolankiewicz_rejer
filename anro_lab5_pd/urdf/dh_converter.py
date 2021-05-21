@@ -52,6 +52,6 @@ def write_yaml(dh_file, yaml_file):
     with open(yaml_file, 'w') as file:
         file.write(text)
 
-dh = os.path.join(get_package_share_directory('anro_lab4_pd'),"dh_matrix.txt")
-param = os.path.join(get_package_share_directory('anro_lab4_pd'),"param.yaml")
+dh = os.path.join(get_package_share_directory('anro_lab5_pd'),"dh_matrix.txt")
+param = os.path.join(get_package_share_directory('anro_lab5_pd'),"param.yaml")
 write_yaml(dh, param)
