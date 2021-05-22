@@ -16,30 +16,22 @@ class OintClient(Node):
     def send_request(self):
         try:
             x = float(sys.argv[1])
-            y = float(sys.argv[2])
-            z = float(sys.argv[3])
-            roll = float(sys.argv[4])  
-            pitch = float(sys.argv[5])
-            yaw = float(sys.argv[6])
-            time = float(sys.argv[7])  
-            method = sys.argv[8]  
+            z = float(sys.argv[2])
+            time = float(sys.argv[3])  
+            method = sys.argv[4]  
         except IndexError:
-            print('Wrong number of parameters. x,y,z coordinates, roll,pitch,yaw angles, time and method are expected.')
+            print('Wrong number of parameters. x,z coordinates, time and method are expected.')
             raise Exception()
         try:
             if time ==0:
                 self.get_logger().info('0 time is not allowed.')
                 raise ValueError()
-            elif method != "linear" and method!="polynomial":
-                self.get_logger().info('There are only two specified methods: polynomial and linear.')
+            elif method != "ellipse" and method!="rectangle":
+                self.get_logger().info('There are only two specified methods: ellipse and rectangle.')
                 raise ValueError()
             else:
                 self.req.x = x
-                self.req.y = y
                 self.req.z = z
-                self.req.roll = roll
-                self.req.pitch = pitch
-                self.req.yaw = yaw
                 self.req.time = time  
                 self.req.method = method  
         except ValueError:
@@ -63,12 +55,11 @@ def main(args=None):
                 oint_client.get_logger().info(
                     'Service call failed %r' % (e,))
             else:
-                if str(oint_client.req.method) == "linear" or str(oint_client.req.method) == "polynomial":
+                if str(oint_client.req.method) == "ellipse" or str(oint_client.req.method) == "rectangle":
                     oint_client.get_logger().info(
-                        'x:%d, y:%d,z:%d, roll:%d, pitch:%d, yaw:%d, Time:%d, Method:%s, Response:%s' %                             
-                        (oint_client.req.x, oint_client.req.y,
-                        oint_client.req.z, oint_client.req.roll,
-                        oint_client.req.pitch, oint_client.req.yaw,
+                        'x:%d,z:%d, Time:%d, Method:%s, Response:%s' %                             
+                        (oint_client.req.x,
+                        oint_client.req.z,
                         oint_client.req.time,
                         oint_client.req.method, response.resp))
                 else:

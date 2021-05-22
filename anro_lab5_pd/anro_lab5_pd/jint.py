@@ -152,6 +152,7 @@ class Jint(Node):
         a1, d1, alfa1, theta1 = rows[0]
         a2, d2, alfa2, theta2 = rows[1]
         a3, d3, alfa3, theta3 = rows[2]
+        a4, d4, alfa4, theta4 = rows[3]
 
         joint1 = kdl.Joint(kdl.Joint.TransZ)
         dh1 = kdl.Frame().DH(a2,alfa2,d1,theta1)
@@ -164,9 +165,10 @@ class Jint(Node):
         final_chain.addSegment(segm2)
         
         joint3 = kdl.Joint(kdl.Joint.RotZ)
-        dh3 = kdl.Frame().DH(0,0,d3,theta3)
+        dh3 = kdl.Frame().DH(a4,0,d3,theta3)
         segm3 = kdl.Segment(joint3, dh3)
         final_chain.addSegment(segm3)
+        
         return final_chain
 
 

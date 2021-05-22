@@ -55,9 +55,9 @@
   
   <link name="tool">
     <visual>
-      <origin xyz="0.05 0 0"/>
+      <origin xyz="${param['line4']['link_xyz']}"/>
       <geometry>
-        <box size="0.1 0.1 0.1" />
+        <box size="${param['line4']['size']} 0.1 0.1" />
       </geometry>
       <material name="red">
         <color rgba="1 0 0 1" />
@@ -70,5 +70,24 @@
     <child link="tool"/>
     <axis xyz="0 0 1"/>
     <origin xyz="${param['line3']['joint_xyz']}" rpy="${param['line3']['joint_rpy']}"/>
+  </joint>
+  
+  <link name="tip">
+    <visual>
+      <origin xyz="${param['line4']['size']} 0 0"/>
+      <geometry>
+        <box size="0 0 0" />
+      </geometry>
+      <material name="red">
+        <color rgba="1 0 0 1" />
+      </material>
+    </visual>
+  </link>
+  
+  <joint name="tool_to_tip" type="continuous">
+    <parent link="tool"/>
+    <child link="tip"/>
+    <axis xyz="0 0 1"/>
+    <origin xyz="${param['line4']['size']} 0 0" rpy="0 0 0"/>
   </joint>
 </robot>
