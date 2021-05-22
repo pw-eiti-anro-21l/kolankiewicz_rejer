@@ -25,10 +25,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-        'jintService = anro_lab5_pd.jint:main',
-        'jintClient = anro_lab5_pd.jint_client:main',
         'ointService = anro_lab5_pd.oint:main',
         'ointClient = anro_lab5_pd.oint_client:main',
+        'ikinPublisher = anro_lab5_pd.ikin:main'
         ],
     },
 )
