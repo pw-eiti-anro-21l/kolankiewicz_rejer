@@ -23,16 +23,14 @@ class Oint(Node):
         self.pose.header.stamp = ROSClock().now().to_msg()
         self.pose.header.frame_id = "base"
 
-        self.pose.pose.position = Point(x=0.0,y=0.0,z=0.0)
+        self.pose.pose.position = Point(x=3.0,y=0.0, z=-1.0)
         self.pose.pose.orientation = Quaternion(w=0.0,x=0.0,y=0.0,z=0.0)
-        self.roll = 0
-        self.pitch = 0
-        self.yaw = 0
-        self.last_rpy = [0.0, 0.0, 0.0]
         self.rate = 20
         qos_profile_marker = QoSProfile(depth=10)
         self.marker_publisher = self.create_publisher(MarkerArray, 'marker_array', qos_profile_marker)
         self.marker_init()
+        self.y = 1.0
+        
 
     def marker_init(self):
         self.markerArray = MarkerArray()
@@ -87,7 +85,7 @@ class Oint(Node):
             time.sleep(1/self.rate)
         
     def ellipse(self,request):
-        self.linear(request.x,1,0,2)# returning to to starting position
+        self.linear(request.x,self.y,0,2)# returning to to starting position
         x=request.x
         z=request.z
         steps = math.floor(request.time*self.rate)
@@ -95,7 +93,7 @@ class Oint(Node):
         for i in range(steps):
             self.pose.pose.position.x = x * math.cos(t)
             self.pose.pose.position.z = z * math.sin(t)
-            self.pose.pose.position.y = 1.0
+            self.pose.pose.position.y = self.y
             t+=1/self.rate
             self.pose.header.stamp = ROSClock().now().to_msg()
             self.pose_publisher.publish(self.pose)
@@ -103,7 +101,7 @@ class Oint(Node):
             time.sleep(1/self.rate)
 
     def rectangle(self,request):
-        self.linear(0,1,0.5,1)# returning to to starting position
+        self.linear(0,self.y,0.5,1)# returning to to starting position
         x=request.x
         z=request.z
         steps = math.floor(request.time*self.rate)
@@ -130,8 +128,7 @@ class Oint(Node):
                 delta_z=-delta_z
             else:
                 self.pose.pose.position.x+=delta_x
-            print(current_cycle)
-            self.pose.pose.position.y = 1.0
+            self.pose.pose.position.y = self.y
             t+=1/self.rate
             self.pose.header.stamp = ROSClock().now().to_msg()
             self.pose_publisher.publish(self.pose)

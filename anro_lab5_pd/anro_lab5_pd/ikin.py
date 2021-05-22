@@ -14,10 +14,13 @@ class IKIN(Node):
     def __init__(self):
         super().__init__('ikin')
         self.subscription = self.create_subscription(PoseStamped, 'oint_pose', self.listener_callback, 10)
-        self.publisher = self.create_publisher(JointState, 'joint_states', 10)
+        qos_profile1 = QoSProfile(depth=10)
+        self.publisher = self.create_publisher(JointState, 'joint_states', qos_profile1)
         self.joint_state = JointState()
+        self.joint_state.name = ['base_to_first_link', 'first_link_to_second_link', 'second_link_to_tool']
         self.a1 = 1.5
         self.a2 = 1.5
+        self.d = 1
 
     def listener_callback(self, msg):
         try:
@@ -25,20 +28,19 @@ class IKIN(Node):
             y_end = msg.pose.position.y
             z_end = msg.pose.position.z
             joint_1, joint_2, joint_3 = 0, 0, 0
-
-            s2 = (x_end - y_end)/self.a2
-            c2 = math.sqrt(1 - s2**2)
+            
+            c2 = (x_end**2+y_end**2-self.a1**2-self.a2**2)/(2*self.a1*self.a2)
+            s2 = math.sqrt(1 - c2**2)
             theta2 = math.atan2(s2, c2)
-
-            s112 = (x_end**2 + y_end**2 - self.a1**2 - self.a2**2)/(2*self.a2*self.a1)
-            c112 = math.sqrt(1 - s112**2)
-            theta112 = math.atan2(s112, c112)
-            theta1 = (theta112-theta2)/2
-
-            joint_1 = z_end
+            r = math.sqrt(x_end**2+y_end**2)
+            c1=(self.a1**2-self.a2**2+r**2)/(2*self.a1*r)
+            s1 = math.sqrt(1-c1**2)
+            theta1 = math.atan2(s1,c1)+math.atan2(y_end,x_end)
+            
+            joint_1 = z_end-self.d
             joint_2 = theta1
-            joint_3 = theta2
-
+            joint_3 = -theta2
+            self.joint_state.header.stamp = ROSClock().now().to_msg()
             self.joint_state.position = [joint_1, joint_2, joint_3]
             self.publisher.publish(self.joint_state)
         except ValueError:
