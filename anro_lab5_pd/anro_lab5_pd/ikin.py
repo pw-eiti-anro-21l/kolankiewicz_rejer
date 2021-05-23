@@ -8,6 +8,8 @@ from rclpy.qos import QoSProfile
 from geometry_msgs.msg import PoseStamped
 from rclpy.clock import ROSClock
 from ament_index_python.packages import get_package_share_directory
+import os
+from ament_index_python.packages import get_package_share_directory
 
 class IKIN(Node):
 
@@ -18,9 +20,13 @@ class IKIN(Node):
         self.publisher = self.create_publisher(JointState, 'joint_states', qos_profile1)
         self.joint_state = JointState()
         self.joint_state.name = ['base_to_first_link', 'first_link_to_second_link', 'second_link_to_tool']
-        self.a1 = 1.5
-        self.a2 = 1.5
-        self.d = 1
+        
+        self.file_name = 'dh_matrix.txt'
+        self.dh_path = os.path.join( get_package_share_directory('anro_lab5_pd'), self.file_name)
+        self.rows = self.read_txt(self.dh_path)
+        self.d = self.rows[0][1]
+        self.a1 = self.rows[2][0]
+        self.a2 = self.rows[3][0]
 
     def listener_callback(self, msg):
         try:
@@ -45,6 +51,17 @@ class IKIN(Node):
             self.publisher.publish(self.joint_state)
         except ValueError:
             print("Position out of reach!")
+
+        def read_txt(self, file_path):
+            file = open(file_path)
+            lines = file.readlines()[1:]
+            rows = []
+            for line in lines:
+                row = line.split()
+                row = [float(item) for item in row]
+                rows.append(row)
+            file.close()
+            return rows
 
 
 def main(args=None):
