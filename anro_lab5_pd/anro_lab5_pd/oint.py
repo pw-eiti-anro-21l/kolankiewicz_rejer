@@ -10,6 +10,9 @@ from geometry_msgs.msg import Quaternion, Point, PoseStamped,Vector3
 from std_msgs.msg import ColorRGBA
 from visualization_msgs.msg import Marker
 from visualization_msgs.msg import MarkerArray
+import os
+from ament_index_python.packages import get_package_share_directory
+
 
 
 class Oint(Node):
@@ -23,14 +26,23 @@ class Oint(Node):
         self.pose.header.stamp = ROSClock().now().to_msg()
         self.pose.header.frame_id = "base"
 
-        self.pose.pose.position = Point(x=3.0,y=0.0, z=-1.0)
+        self.pose.pose.position = Point(x=0.0,y=0.0, z=0.0)
         self.pose.pose.orientation = Quaternion(w=0.0,x=0.0,y=0.0,z=0.0)
         self.rate = 20
         qos_profile_marker = QoSProfile(depth=10)
         self.marker_publisher = self.create_publisher(MarkerArray, 'marker_array', qos_profile_marker)
         self.marker_init()
         self.y = 1.0
-        
+
+        self.file_name = 'dh_matrix.txt'
+        self.dh_path = os.path.join( get_package_share_directory('anro_lab5_pd'), self.file_name)
+        self.rows = self.read_txt(self.dh_path)
+        self.d = self.rows[0][1]
+        self.a1 = self.rows[2][0]
+        self.a2 = self.rows[3][0]
+        print(self.d)
+        print(self.a1)
+        print(self.a2)
 
     def marker_init(self):
         self.markerArray = MarkerArray()
@@ -144,7 +156,16 @@ class Oint(Node):
         quat = T.to_quaternion()
         return quat
 
-
+    def read_txt(self, file_path):
+        file = open(file_path)
+        lines = file.readlines()[1:]
+        rows = []
+        for line in lines:
+            row = line.split()
+            row = [float(item) for item in row]
+            rows.append(row)
+        file.close()
+        return rows
 
 def main(args=None):
     rclpy.init(args=args)
@@ -157,4 +178,3 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
-
