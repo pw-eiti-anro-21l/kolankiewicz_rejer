@@ -9,7 +9,6 @@ from geometry_msgs.msg import PoseStamped
 from rclpy.clock import ROSClock
 from ament_index_python.packages import get_package_share_directory
 import os
-from ament_index_python.packages import get_package_share_directory
 
 class IKIN(Node):
 
@@ -46,11 +45,13 @@ class IKIN(Node):
             joint_1 = z_end-self.d
             joint_2 = theta1
             joint_3 = -theta2
+            if joint_1 < -self.d:
+                raise ValueError
             self.joint_state.header.stamp = ROSClock().now().to_msg()
             self.joint_state.position = [joint_1, joint_2, joint_3]
             self.publisher.publish(self.joint_state)
         except ValueError:
-            print("Position out of reach!")
+            self.get_logger().error("Position out of reach!")
 
     def read_txt(self, file_path):
         file = open(file_path)
