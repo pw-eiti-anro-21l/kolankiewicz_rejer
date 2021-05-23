@@ -52,16 +52,16 @@ class IKIN(Node):
         except ValueError:
             print("Position out of reach!")
 
-        def read_txt(self, file_path):
-            file = open(file_path)
-            lines = file.readlines()[1:]
-            rows = []
-            for line in lines:
-                row = line.split()
-                row = [float(item) for item in row]
-                rows.append(row)
-            file.close()
-            return rows
+    def read_txt(self, file_path):
+        file = open(file_path)
+        lines = file.readlines()[1:]
+        rows = []
+        for line in lines:
+            row = line.split()
+            row = [float(item) for item in row]
+            rows.append(row)
+        file.close()
+        return rows
 
 
 def main(args=None):
