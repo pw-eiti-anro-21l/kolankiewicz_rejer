@@ -33,11 +33,11 @@ class IKIN(Node):
             y_end = msg.pose.position.y
             z_end = msg.pose.position.z
             joint_1, joint_2, joint_3 = 0, 0, 0
-            
-            c2 = (x_end**2+y_end**2-self.a1**2-self.a2**2)/(2*self.a1*self.a2)
+
+            r = math.sqrt(x_end**2+y_end**2)
+            c2 = (r**2-self.a1**2-self.a2**2)/(2*self.a1*self.a2)
             s2 = math.sqrt(1 - c2**2)
             theta2 = math.atan2(s2, c2)
-            r = math.sqrt(x_end**2+y_end**2)
             c1=(self.a1**2-self.a2**2+r**2)/(2*self.a1*r)
             s1 = math.sqrt(1-c1**2)
             theta1 = math.atan2(s1,c1)+math.atan2(y_end,x_end)
@@ -45,13 +45,13 @@ class IKIN(Node):
             joint_1 = z_end-self.d
             joint_2 = theta1
             joint_3 = -theta2
-            if joint_1 < -self.d:
+            if z_end < 0 or z_end>1:
                 raise ValueError
             self.joint_state.header.stamp = ROSClock().now().to_msg()
             self.joint_state.position = [joint_1, joint_2, joint_3]
             self.publisher.publish(self.joint_state)
         except ValueError:
-            self.get_logger().error("Position out of reach!")
+            self.get_logger().error(f"Position out of reach! x:{x_end},y:{y_end},z:{z_end}")
 
     def read_txt(self, file_path):
         file = open(file_path)

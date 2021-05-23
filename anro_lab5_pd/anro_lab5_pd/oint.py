@@ -26,13 +26,12 @@ class Oint(Node):
         self.pose.header.stamp = ROSClock().now().to_msg()
         self.pose.header.frame_id = "base"
 
-        self.pose.pose.position = Point(x=0.0,y=0.0, z=0.0)
+        
         self.pose.pose.orientation = Quaternion(w=0.0,x=0.0,y=0.0,z=0.0)
         self.rate = 20
         qos_profile_marker = QoSProfile(depth=10)
         self.marker_publisher = self.create_publisher(MarkerArray, 'marker_array', qos_profile_marker)
         self.marker_init()
-        self.y = 1.0
 
         self.file_name = 'dh_matrix.txt'
         self.dh_path = os.path.join( get_package_share_directory('anro_lab5_pd'), self.file_name)
@@ -43,6 +42,8 @@ class Oint(Node):
         print(self.d)
         print(self.a1)
         print(self.a2)
+        self.pose.pose.position = Point(x=(self.a1+self.a2),y=0.0, z=self.d)
+        self.offset=[1.0,1.0,0.5]
 
     def marker_init(self):
         self.markerArray = MarkerArray()
@@ -104,15 +105,16 @@ class Oint(Node):
             time.sleep(1/self.rate)
         
     def ellipse(self,request):
-        self.linear(request.x,self.y,0,2)# returning to to starting position
         x=request.x
         z=request.z
+        self.linear(x+self.offset[0],self.offset[1],self.offset[2],2)# returning to to starting position
+        
         steps = math.floor(request.time*self.rate)
         t=0
         for i in range(steps):
-            self.pose.pose.position.x = x * math.cos(t)
-            self.pose.pose.position.z = z * math.sin(t)
-            self.pose.pose.position.y = self.y
+            self.pose.pose.position.x = x * math.cos(t)+self.offset[0]
+            self.pose.pose.position.z = z * math.sin(t)+self.offset[2]
+            self.pose.pose.position.y = self.offset[1]
             t+=1/self.rate
             self.pose.header.stamp = ROSClock().now().to_msg()
             self.pose_publisher.publish(self.pose)
@@ -120,7 +122,7 @@ class Oint(Node):
             time.sleep(1/self.rate)
 
     def rectangle(self,request):
-        self.linear(0,self.y,0.5,1)# returning to to starting position
+        self.linear(self.offset[0],self.offset[1],self.offset[2],1)# returning to to starting position
         x=request.x
         z=request.z
         steps = math.floor(request.time*self.rate)
@@ -147,7 +149,7 @@ class Oint(Node):
                 delta_z=-delta_z
             else:
                 self.pose.pose.position.x+=delta_x
-            self.pose.pose.position.y = self.y
+            self.pose.pose.position.y = self.offset[1]
             t+=1/self.rate
             self.pose.header.stamp = ROSClock().now().to_msg()
             self.pose_publisher.publish(self.pose)

@@ -18,12 +18,4 @@ def generate_launch_description():
             package='joint_state_publisher_gui',
             executable='joint_state_publisher_gui',
             name='joint_state_publisher_gui'),
-        Node(
-	    package='anro_lab5_pd',
-	    executable='kdl_node',
-	    name='KDL_DKIN',),
-	Node(
-	    package='anro_lab5_pd',
-	    executable='nonkdl_node',
-	    name='NONKDL_DKIN',),
     ])
