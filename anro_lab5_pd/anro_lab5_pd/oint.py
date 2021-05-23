@@ -58,7 +58,7 @@ class Oint(Node):
         self.marker.action = self.marker.ADD
         self.marker.scale = Vector3(x=0.02,y=0.02,z=0.02)
         self.marker.pose.orientation= Quaternion(w=0.0,x=0.0,y=0.0,z=0.0)
-        self.marker.color = ColorRGBA(r = 0.4,g = 1.0,b = 0.0,a=1.0)
+        self.marker.color = ColorRGBA(r = 0.0,g = 1.0,b = 0.0,a=1.0)
 
 
     def oint_control_srv_callback(self, request, response ):
@@ -79,6 +79,13 @@ class Oint(Node):
         for m in self.markerArray.markers:
             m.id = id
             id += 1
+        x = self.pose.pose.position.x
+        y = self.pose.pose.position.y
+        z = self.pose.pose.position.z
+        if (z < 0) or (z > self.d) or (math.sqrt(x**2 + y**2) > (self.a1 + self.a2)) or (math.sqrt(x**2 + y**2) < abs(self.a1-self.a2)):
+            self.marker.color = ColorRGBA(r = 1.0,g = 0.0,b = 0.0,a=1.0)
+        else:
+            self.marker.color = ColorRGBA(r = 0.0,g = 1.0,b = 0.0,a=1.0)
         self.marker_publisher.publish(self.markerArray)
 
     def linear(self, x,y,z,t):
